@@ -10,19 +10,33 @@
 			"name": "Products",
 			"item": [
 				{
-					"name": "GET Product by id",
+					"name": "POST Product",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"//Shows the product and its details in the console\r",
-									"pm.test(\"Response has product data\", function () {\r",
+									"pm.test(\"Status code is 201 Created\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product created and has insertId\", function () {\r",
 									"    const jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData).to.be.an(\"object\");\r",
-									"    pm.expect(jsonData).to.have.property(\"id\");\r",
-									"    pm.expect(jsonData).to.have.property(\"name\");\r",
-									"});"
+									"    pm.expect(jsonData).to.have.property(\"insertId\").that.is.a(\"number\");\r",
+									"    pm.environment.set(\"product_id\", pm.response.json().insertId);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"product_id\", jsonData.insertId);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -30,10 +44,19 @@
 						}
 					],
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Funko Pop\",\r\n    \"price\": 500,\r\n    \"categoryId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://localhost:5000/api/products/3",
+							"raw": "http://localhost:5000/api/products",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -41,8 +64,7 @@
 							"port": "5000",
 							"path": [
 								"api",
-								"products",
-								"3"
+								"products"
 							]
 						}
 					},
@@ -113,12 +135,220 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "GET Product by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Shows the product and its details in the console\r",
+									"pm.test(\"Response has product data\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"object\");\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/products/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"products",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Got all products\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Product by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/Electronics/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"Electronics",
+								"products"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
 			"name": "Categories",
 			"item": [
+				{
+					"name": "POST Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Debug: log response to Postman console\r",
+									"console.log(jsonData);\r",
+									"\r",
+									"// Set the ID to the environment variable\r",
+									"pm.environment.set(\"categoryId\", jsonData.insertId);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Misc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"// Remove the categoryId from the environment \r",
+									"pm.environment.unset(\"categoryId\");\r",
+									"\r",
+									"\r",
+									"console.log(\"Category deleted\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/categories/{{categoryId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"categories",
+								"{{categoryId}}"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "GET Categories",
 					"event": [
@@ -173,120 +403,6 @@
 							"path": [
 								"api",
 								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST Categories",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const jsonData = pm.response.json();\r",
-									"\r",
-									"// Debug: log response to Postman console\r",
-									"console.log(jsonData);\r",
-									"\r",
-									"// Set the ID to the environment variable\r",
-									"pm.environment.set(\"categoryId\", jsonData.insertId);"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"New Category 1\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/categories",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DELETE Categories",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"\r",
-									"// Remove the categoryId from the environment (optional cleanup)\r",
-									"pm.environment.unset(\"categoryId\");\r",
-									"\r",
-									"// Simple response message\r",
-									"console.log(\"Category deleted\");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/api/categories/{{categoryId}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"api",
-								"categories",
-								"{{categoryId}}"
 							]
 						}
 					},
