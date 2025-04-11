@@ -7,6 +7,96 @@
 	},
 	"item": [
 		{
+			"name": "Admin login",
+			"item": [
+				{
+					"name": "Login(Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged in as admin\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@admin.com\",\r\n    \"password\": \"admin123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout(Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged out as admin\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@admin.com\",\r\n    \"password\": \"admin123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Products",
 			"item": [
 				{
@@ -23,10 +113,11 @@
 									"pm.test(\"Product created and has insertId\", function () {\r",
 									"    const jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData).to.have.property(\"insertId\").that.is.a(\"number\");\r",
-									"    pm.environment.set(\"product_id\", pm.response.json().insertId);\r",
+									"    pm.environment.set(\"product_id\", jsonData.insertId);\r",
 									"});\r",
 									"\r",
-									"pm.environment.set(\"product_id\", jsonData.insertId);"
+									"\r",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -56,15 +147,88 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/api/products",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/products",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Product price",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Price updated successfully\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"price\": 450\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.unset(\"product_id\");\r",
+									"\r",
+									"console.log(\"Product deleted\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"{{product_id}}"
 							]
 						}
 					},
@@ -122,12 +286,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/api/products",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/products",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"products"
@@ -160,16 +322,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5000/api/products/3",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/products/28",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"products",
-								"3"
+								"28"
 							]
 						}
 					},
@@ -195,12 +355,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5000/api/products",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/products",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"products"
@@ -215,12 +373,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5000/api/Electronics/products",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/Electronics/products",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"Electronics",
@@ -278,12 +434,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/api/categories",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/categories",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"categories"
@@ -302,7 +456,6 @@
 									"\r",
 									"// Remove the categoryId from the environment \r",
 									"pm.environment.unset(\"categoryId\");\r",
-									"\r",
 									"\r",
 									"console.log(\"Category deleted\");"
 								],
@@ -334,12 +487,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/api/categories/{{categoryId}}",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/categories/{{categoryId}}",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"categories",
@@ -394,12 +545,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/api/categories",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/categories",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"categories"
@@ -413,6 +562,54 @@
 		{
 			"name": "Users",
 			"item": [
+				{
+					"name": "POST Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200 OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User was created and has insertId\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"insertId\").that.is.a(\"number\");\r",
+									"    pm.environment.set(\"user_id\", jsonData.insertId);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"bigtoebob\",\r\n    \"email\": \"bigtoebob@gmail.com\",\r\n    \"password\": \"supersafepassword123\",\r\n    \"roleId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "GET Users",
 					"event": [
@@ -444,15 +641,95 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5000/api/users",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/users",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login(User)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged in as user\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"bigtoebob@gmail.com\",\r\n    \"password\": \"supersafepassword123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout(User)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Logged out as user\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"bigtoebob@gmail.com\",\r\n    \"password\": \"supersafepassword123\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
 							]
 						}
 					},
@@ -464,7 +741,96 @@
 			"name": "Orders",
 			"item": [
 				{
-					"name": "GET Orders (not done)",
+					"name": "Get Products Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Got all products\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Order created successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData).to.have.property(\"insertId\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData).to.have.property(\"total\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"order_id\", jsonData.insertId);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productId\": 27,\r\n  \"quantity\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Orders",
 					"event": [
 						{
 							"listen": "test",
@@ -496,12 +862,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5000/api/orders",
-							"protocol": "http",
+							"raw": "{{base_url}}/api/orders",
 							"host": [
-								"localhost"
+								"{{base_url}}"
 							],
-							"port": "5000",
 							"path": [
 								"api",
 								"orders"
@@ -509,101 +873,121 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "GET Order by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each order has an id, username, productName, quantity, price, total, and createdAt\", function () {\r",
+									"  pm.response.json().forEach(function(order) {\r",
+									"    pm.expect(order).to.have.property('id');\r",
+									"    pm.expect(order).to.have.property('username');\r",
+									"    pm.expect(order).to.have.property('productName');\r",
+									"    pm.expect(order).to.have.property('quantity');\r",
+									"    pm.expect(order).to.have.property('price');\r",
+									"    pm.expect(order).to.have.property('total');\r",
+									"    pm.expect(order).to.have.property('createdAt');\r",
+									"  });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/4/orders",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"4",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Order by id & orderid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"pm.test(\"Order is found in the response\", function () {\r",
+									"  pm.expect(pm.response.json()).to.have.property('id');\r",
+									"  pm.expect(pm.response.json()).to.have.property('productName');\r",
+									"  pm.expect(pm.response.json()).to.have.property('quantity');\r",
+									"  pm.expect(pm.response.json()).to.have.property('price');\r",
+									"  pm.expect(pm.response.json()).to.have.property('total');\r",
+									"  pm.expect(pm.response.json()).to.have.property('createdAt');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/4/orders/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"4",
+								"orders",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
-		},
-		{
-			"name": "Login(Admin)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Logged in as admin\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"    \r",
-							"    \r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"email\": \"admin@admin.com\",\r\n    \"password\": \"admin123\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/api/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"api",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Logout(Admin)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Logged out as admin\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"    \r",
-							"    \r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"email\": \"admin@admin.com\",\r\n    \"password\": \"admin123\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/api/login",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"api",
-						"login"
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }
